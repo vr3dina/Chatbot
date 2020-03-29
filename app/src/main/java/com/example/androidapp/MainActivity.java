@@ -1,15 +1,18 @@
 package com.example.androidapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,29 +54,19 @@ public class MainActivity extends AppCompatActivity {
         chatMessageList.setAdapter(messageListAdapter);
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-////        outState.putCharSequence("messageArray", chatMessageList.getTooltipText());
-//        ArrayList<Integer> id=new ArrayList<>();
-//        ArrayList<String> title=new ArrayList<>();
-////        for(int i=0;i<arr.size();i++){
-////            id.add(arr.get(i).id);
-////            title.add(arr.get(i).title);
-////        }
-//        outState.putIntegerArrayList("id",id);
-//        outState.putStringArrayList("title",title);
-////        outState.putParcelableArrayList("List", new ArrayList<Message>(messageListAdapter.messageList));
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-////        CharSequence text = savedInstanceState.getCharSequence("messageArray");
-//        ArrayList<? extends Parcelable> messages =  savedInstanceState.getParcelableArrayList("List");
-////        if (text != null)
-////            chatMessageList.append(text);
-//    }
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) messageListAdapter.messageList);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        messageListAdapter.messageList = savedInstanceState.getParcelableArrayList("list");
+        messageListAdapter.notifyDataSetChanged();
+        chatMessageList.scrollToPosition(messageListAdapter.messageList.size() - 1);
+    }
 
     protected void onSend() {
         String text = questionText.getText().toString();
