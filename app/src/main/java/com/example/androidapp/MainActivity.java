@@ -1,10 +1,5 @@
 package com.example.androidapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
@@ -12,8 +7,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,13 +70,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onSend() {
-        String text = questionText.getText().toString();
-        String answer = AI.getAnswer(text);
-        messageListAdapter.messageList.add(new Message(text, true));
-        messageListAdapter.messageList.add(new Message(answer, false));
-        messageListAdapter.notifyDataSetChanged();
-        chatMessageList.scrollToPosition(messageListAdapter.messageList.size() - 1);
-        textToSpeech.speak(answer, TextToSpeech.QUEUE_FLUSH,null, null );
-        questionText.setText("");
+        final String text = questionText.getText().toString();
+        AI.getAnswer(text, new Consumer<String>() {
+            @Override
+            public void accept(String answer) {
+                messageListAdapter.messageList.add(new Message(text, true));
+                messageListAdapter.messageList.add(new Message(answer, false));
+                messageListAdapter.notifyDataSetChanged();
+                chatMessageList.scrollToPosition(messageListAdapter.messageList.size() - 1);
+                textToSpeech.speak(answer, TextToSpeech.QUEUE_FLUSH,null, null );
+                questionText.setText("");
+            }
+        });
     }
 }
