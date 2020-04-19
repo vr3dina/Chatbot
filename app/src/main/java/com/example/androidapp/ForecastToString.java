@@ -22,7 +22,8 @@ public class ForecastToString {
             public void onResponse(@NonNull Call<Forecast> call, @NonNull Response<Forecast> response) {
                 Forecast result = response.body();
                 if (result != null) {
-                    String answer = "сейчас где-то " + result.current.temperature + " градуса " + " и " + result.current.weather_descriptions.get(0);
+                    String answer = "сейчас где-то " + result.current.temperature + " градус" + AI.GetWordEnding(result.current.temperature) +
+                            " и " + result.current.weather_descriptions.get(0);
                     callback.accept(answer);
                 }
                 else {
@@ -36,4 +37,5 @@ public class ForecastToString {
             }
         });
     }
+
 }

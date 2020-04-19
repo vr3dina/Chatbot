@@ -46,16 +46,23 @@ class AI {
         if (matcher.find()) {
             String cityName = matcher.group(1);
 
-            ForecastToString.getForecast(cityName, new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    ans.add(s);
-                    callback.accept(String.join(", ", ans));
-                }
+            ForecastToString.getForecast(cityName, s -> {
+                ans.add(s);
+                callback.accept(String.join(", ", ans));
             });
         }
         callback.accept(String.join(", ", ans));
     }
+
+    public static String GetWordEnding(int n){
+        n = (n < 0) ? -n : n;
+        return (n % 100 >= 11 && n % 100 <= 19) || n % 10 == 0 || n % 10 > 4
+                ? "ов"
+                : n % 10 == 1
+                ? ""
+                : "a";
+    }
+
 
     private static String getTime() {
         Date now = new Date();
