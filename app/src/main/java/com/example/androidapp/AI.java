@@ -4,6 +4,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.androidapp.services.num2str.ConvertNumberToString;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -40,6 +43,16 @@ class AI {
                 .map(t -> answers.get(t))
                 .collect(Collectors.toList());
         Collections.reverse(ans);
+
+        Pattern numConvertPattern = Pattern.compile("число (\\d+) в строку", Pattern.CASE_INSENSITIVE);
+        Matcher matcher2 = numConvertPattern.matcher(question);
+        if (matcher2.find()) {
+            Integer number = Integer.parseInt(Objects.requireNonNull(matcher2.group(1)));
+            ConvertNumberToString.getConvertedNumber(number, false, s -> {
+                ans.add("строковая запись числа " + number.toString() + ": " + s);
+                callback.accept(String.join(", ", ans));
+            });
+        }
 
         Pattern cityPattern = Pattern.compile("погода в городе (\\p{L}+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = cityPattern.matcher(question);
