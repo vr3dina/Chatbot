@@ -51,29 +51,9 @@ public class AI {
                 .collect(Collectors.toList());
         Collections.reverse(ans);
 
-//            String date = getDates(question);
-//            new AsyncTask<String, Integer, String>() {
-//                @Override
-//                protected String doInBackground(String... strings) {
-//                    StringBuilder result = new StringBuilder();
-//                    for (String str : strings) {
-//                        try {
-//                            result.append(" ").append(str).append(": ").append(ParsingHtmlService.getHoliday(str)).append("\n");
-//                        }
-//                        catch (IOException e) {
-//                            result.append(" ").append(str).append("Не могу ответить");
-//                        }
-//                    }
-//                    return result.toString();
-//                }
-//                protected void onPostExecute(String res) {
-//                    super.onPostExecute(res);
-//                    callback.accept(res);
-//                }
-//            }.execute(date.split(","));
-            String[] dates = getDates(question);
-            if (dates != null)
-                getHolidays(dates, callback);
+        String[] dates = getDates(question);
+        if (dates != null)
+            getHolidays(dates, callback);
 
         Pattern numConvertPattern = Pattern.compile("число (\\d+) в строку", Pattern.CASE_INSENSITIVE);
         Matcher matcher2 = numConvertPattern.matcher(question);
@@ -117,7 +97,6 @@ public class AI {
     }
 
     static String[] getDates(String question) {
-//        String pattern = "праздник \\s*(\\d{1,2}\\.\\d{1,2}\\.\\d{4})";
         Pattern pattern = Pattern.compile("(праздник\\s*)(\\d{1,2}\\.\\d{1,2}\\.\\d{4})(,\\s\\d{1,2}\\.\\d{1,2}\\.\\d{4})*");
         Matcher matcher = pattern.matcher(question);
         if (matcher.find()) {
