@@ -10,19 +10,26 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-public class Message implements Parcelable {
-    String text;
-    Date date;
-    Boolean isSend;
+import chatbot.db.MessageEntity;
 
-    private DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss", new Locale("rus"));
+public class Message implements Parcelable {
+    public String text;
+    public Date date;
+    public Boolean isSend;
+
+    public DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss", new Locale("rus"));
+
+    public Message(MessageEntity entity) throws ParseException {
+        text = entity.text;
+        date = dateFormat.parse(entity.date);
+        isSend = entity.isSend == 1;
+    }
 
     public Message(String text, Boolean isSend) {
         this.text = text;
         this.isSend = isSend;
         this.date = new Date();
     }
-
 
     private Message(Parcel in) {
         text = in.readString();

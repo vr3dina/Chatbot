@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Chat Bot</string>
+    <string name="day_theme">Light theme</string>
+    <string name="night_theme">Dark theme</string>
 </resources>

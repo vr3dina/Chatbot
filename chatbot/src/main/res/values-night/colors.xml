@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="assistantBubble">#4A5512</color>
+    <color name="userBubble">#0B4C43</color>
+</resources>

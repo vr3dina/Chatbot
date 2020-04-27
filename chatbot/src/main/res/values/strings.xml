@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Головой пощник</string>
+    <string name="day_theme">dСветлая тема</string>
+    <string name="night_theme">Темная тема</string>
 </resources>
