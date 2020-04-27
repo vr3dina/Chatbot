@@ -4,7 +4,9 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -21,8 +23,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import chatbot.services.ParsingHtmlService;
 import chatbot.services.forecast.ForecastToString;
 import chatbot.services.num2str.ConvertNumberToString;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class AI {
 
@@ -45,6 +51,10 @@ public class AI {
                 .collect(Collectors.toList());
         Collections.reverse(ans);
 
+        String[] dates = getDates(question);
+        if (dates != null)
+            getHolidays(dates, callback);
+
         Pattern numConvertPattern = Pattern.compile("число (\\d+) в строку", Pattern.CASE_INSENSITIVE);
         Matcher matcher2 = numConvertPattern.matcher(question);
         if (matcher2.find()) {
@@ -65,7 +75,44 @@ public class AI {
                 callback.accept(String.join(", ", ans));
             });
         }
+
         callback.accept(String.join(", ", ans));
+    }
+
+    private static void getHolidays(String[] dates, final Consumer<String> callback) {
+        Observable.fromCallable(() -> {
+            StringBuilder result = new StringBuilder();
+            for (String str : dates) {
+                try {
+                    result.append(" ").append(str).append(": ").append(ParsingHtmlService.getHoliday(str)).append("\n");
+                } catch (IOException e) {
+                    result.append(" ").append(str).append(": Не могу ответь");
+                }
+            }
+            return result.toString();
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(callback::accept);
+    }
+
+    static String[] getDates(String question) {
+        Pattern pattern = Pattern.compile("(праздник\\s*)(\\d{1,2}\\.\\d{1,2}\\.\\d{4})(,\\s\\d{1,2}\\.\\d{1,2}\\.\\d{4})*");
+        Matcher matcher = pattern.matcher(question);
+        if (matcher.find()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMMM YYYY", new Locale("rus"));
+            String[] dates = matcher.group().replaceAll( "праздник\\s*", "").split(", ");
+            for (int i = 0; i < dates.length; i++) {
+                try {
+                    dates[i] = sdf.format(Objects.requireNonNull(new SimpleDateFormat("dd.MM.yyyy", new Locale("rus"))
+                            .parse(dates [i])));
+                } catch (ParseException e) {
+                    dates[i] = "";
+                }
+            }
+            return dates;
+        }
+        return null;
     }
 
     public static String GetWordEnding(int n){
